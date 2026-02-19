@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kala Bazar</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#FAF7F2;color:#2D1F14;font-family:'Inter',sans-serif;min-height:100vh;}
+
+nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 32px;border-bottom:1px solid #E8DDD0;background:#fff;
+}
+.logo{font-family:'Playfair Display',serif;font-size:20px;font-style:italic;color:#B85C2C;}
+.nav-tag{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#A0896E;}
+
+.wrapper{max-width:600px;margin:0 auto;padding:36px 20px 60px;}
+
+.page-title{text-align:center;margin-bottom:32px;}
+.page-title h1{font-family:'Playfair Display',serif;font-size:28px;color:#2D1F14;margin-bottom:6px;}
+.page-title p{font-size:13px;color:#A0896E;}
+
+.card{background:#fff;border:1px solid #E8DDD0;border-radius:10px;padding:22px;margin-bottom:14px;}
+.card-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#B85C2C;font-weight:500;margin-bottom:14px;}
+
+.upload-zone{
+  border:2px dashed #E0CDB8;border-radius:8px;padding:32px 20px;
+  text-align:center;cursor:pointer;position:relative;
+  transition:border-color 0.2s,background 0.2s;background:#FDFAF6;
+}
+.upload-zone:hover,.upload-zone.dragover{border-color:#B85C2C;background:#FFF7F2;}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-icon{
+  width:40px;height:40px;margin:0 auto 10px;background:#FFF0E6;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+}
+.upload-icon svg{stroke:#B85C2C;width:18px;height:18px;}
+.upload-main{font-size:14px;color:#5C3D26;margin-bottom:4px;}
+.upload-sub{font-size:11px;color:#C4A882;}
+
+#preview-wrap{display:none;margin-top:14px;}
+#preview-img{width:100%;max-height:200px;object-fit:contain;border-radius:6px;border:1px solid #E8DDD0;}
+.preview-bar{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+.preview-status{font-size:11px;color:#7A9A5A;}
+.preview-clear{font-size:11px;color:#B85C2C;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;}
+
+.lang-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.lang-opt{position:relative;}
+.lang-opt input{position:absolute;opacity:0;width:0;height:0;}
+.lang-tile{
+  display:flex;flex-direction:column;align-items:center;padding:10px 4px;
+  border:1.5px solid #E8DDD0;border-radius:8px;cursor:pointer;
+  transition:all 0.18s;background:#FDFAF6;text-align:center;
+}
+.lang-tile:hover{border-color:#D4926A;background:#FFF7F2;}
+.lang-opt input:checked + .lang-tile{border-color:#B85C2C;background:#FFF0E6;}
+.lang-name{font-size:12px;font-weight:500;color:#3D2410;margin-bottom:3px;}
+.lang-script{font-size:11px;color:#C4A882;}
+.lang-opt input:checked + .lang-tile .lang-name{color:#B85C2C;}
+
+.btn{
+  width:100%;padding:14px;background:#B85C2C;color:#fff;border:none;border-radius:8px;
+  cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;
+  letter-spacing:1px;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:background 0.2s,box-shadow 0.2s;
+}
+.btn:hover{background:#A0491F;box-shadow:0 4px 16px rgba(184,92,44,0.25);}
+.btn:disabled{opacity:0.55;cursor:not-allowed;box-shadow:none;}
+.spinner{
+  display:none;width:14px;height:14px;
+  border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;
+  border-radius:50%;animation:spin 0.7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+#results{display:none;margin-top:14px;}
+.result-block{
+  background:#fff;border:1px solid #E8DDD0;border-radius:10px;
+  overflow:hidden;margin-bottom:10px;
+  animation:up 0.35s ease forwards;opacity:0;
+}
+@keyframes up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.result-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 14px;background:#FAF7F2;border-bottom:1px solid #F0E8DC;
+}
+.result-lang{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:600;color:#B85C2C;}
+.copy-btn{
+  font-size:10px;letter-spacing:1px;text-transform:uppercase;
+  color:#A0896E;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:color 0.15s;
+}
+.copy-btn:hover{color:#B85C2C;}
+.result-body{padding:14px;font-size:15px;line-height:1.7;color:#2D1F14;}
+.result-body.tr{font-size:14px;color:#5C3D26;font-style:italic;}
+
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:#2D1F14;color:#FAF7F2;padding:10px 20px;border-radius:6px;
+  font-size:12px;opacity:0;transition:opacity 0.25s;pointer-events:none;z-index:99;
+}
+.toast.show{opacity:1;}
+
+@media(max-width:480px){
+  .lang-grid{grid-template-columns:repeat(3,1fr);}
+  nav{padding:14px 20px;}
+  .wrapper{padding:28px 16px 48px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Kala Bazar</div>
+  <div class="nav-tag">AI · Tribal Art</div>
+</nav>
+
+<div class="wrapper">
+  <div class="page-title">
+    <h1>Describe Tribal Artwork</h1>
+    <p>Upload an image · Pick languages · Get AI descriptions</p>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Step 1 — Upload Artwork</div>
+    <div class="upload-zone" id="dropZone">
+      <input type="file" id="imageInput" accept="image/*" onchange="previewImage(this)">
+      <div id="uploadEmpty">
+        <div class="upload-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <div class="upload-main">Drop artwork here or click to browse</div>
+        <div class="upload-sub">PNG · JPG · WEBP · Max 10MB</div>
+      </div>
+    </div>
+    <div id="preview-wrap">
+      <img id="preview-img" src="" alt="">
+      <div class="preview-bar">
+        <span class="preview-status">✓ Image ready</span>
+        <button class="preview-clear" onclick="clearPreview()">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Step 2 — Choose Languages</div>
+    <div class="lang-grid">
+      <div class="lang-opt">
+        <input type="checkbox" id="l-hi" value="hindi">
+        <label class="lang-tile" for="l-hi">
+          <span class="lang-name">Hindi</span>
+          <span class="lang-script">हिन्दी</span>
+        </label>
+      </div>
+      <div class="lang-opt">
+        <input type="checkbox" id="l-mr" value="marathi">
+        <label class="lang-tile" for="l-mr">
+          <span class="lang-name">Marathi</span>
+          <span class="lang-script">मराठी</span>
+        </label>
+      </div>
+      <div class="lang-opt">
+        <input type="checkbox" id="l-bn" value="bengali">
+        <label class="lang-tile" for="l-bn">
+          <span class="lang-name">Bengali</span>
+          <span class="lang-script">বাংলা</span>
+        </label>
+      </div>
+      <div class="lang-opt">
+        <input type="checkbox" id="l-ta" value="tamil">
+        <label class="lang-tile" for="l-ta">
+          <span class="lang-name">Tamil</span>
+          <span class="lang-script">தமிழ்</span>
+        </label>
+      </div>
+      <div class="lang-opt">
+        <input type="checkbox" id="l-te" value="telugu">
+        <label class="lang-tile" for="l-te">
+          <span class="lang-name">Telugu</span>
+          <span class="lang-script">తెలుగు</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn" id="generateBtn" onclick="uploadImage()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+    </svg>
+    <span id="btnLabel">Generate Description</span>
+    <div class="spinner" id="spinner"></div>
+  </button>
+
+  <div id="results"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const dropZone=document.getElementById('dropZone');
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragover');});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop',e=>{
+  e.preventDefault();dropZone.classList.remove('dragover');
+  const f=e.dataTransfer.files[0];
+  if(f){document.getElementById('imageInput').files=e.dataTransfer.files;previewImage(document.getElementById('imageInput'));}
+});
+
+function previewImage(input){
+  if(!input.files[0])return;
+  const r=new FileReader();
+  r.onload=e=>{
+    document.getElementById('preview-img').src=e.target.result;
+    document.getElementById('preview-wrap').style.display='block';
+    document.getElementById('uploadEmpty').style.display='none';
+  };
+  r.readAsDataURL(input.files[0]);
+}
+
+function clearPreview(){
+  document.getElementById('preview-wrap').style.display='none';
+  document.getElementById('uploadEmpty').style.display='block';
+  document.getElementById('imageInput').value='';
+}
+
+function copyText(id){
+  navigator.clipboard.writeText(document.getElementById(id).innerText).then(()=>{
+    const b=document.querySelector(`[data-copy="${id}"]`);
+    if(b){const o=b.textContent;b.textContent='Copied!';setTimeout(()=>b.textContent=o,1500);}
+  });
+}
+
+async function uploadImage(){
+  const fi=document.getElementById("imageInput");
+  if(!fi.files[0]){toast("Please select an image");return;}
+  const sel=Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(c=>c.value);
+  if(!sel.length){toast("Select at least one language");return;}
+
+  const btn=document.getElementById('generateBtn');
+  btn.disabled=true;
+  document.getElementById('spinner').style.display='block';
+  document.getElementById('btnLabel').textContent='Generating…';
+
+  const fd=new FormData();
+  fd.append("file",fi.files[0]);
+  try{
+    const res=await fetch(`http://127.0.0.1:8000/generate/?languages=${sel.join(",")}`,{method:"POST",body:fd});
+    const data=await res.json();
+    renderResults(data);
+  }catch(e){toast("Could not connect to server. Is it running?");}
+  finally{
+    btn.disabled=false;
+    document.getElementById('spinner').style.display='none';
+    document.getElementById('btnLabel').textContent='Generate Description';
+  }
+}
+
+function renderResults(data){
+  const names={hindi:'Hindi',marathi:'Marathi',bengali:'Bengali',tamil:'Tamil',telugu:'Telugu'};
+  const el=document.getElementById('results');
+  el.style.display='block';
+  let html='';let d=0;
+  html+=block('eng','English',data.english,'',d);d+=70;
+  for(const[l,t] of Object.entries(data.translations)){html+=block(l,names[l]||l,t,'tr',d);d+=70;}
+  el.innerHTML=html;
+  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function block(id,lang,text,cls,delay){
+  const tid=`t-${id}`;
+  return `<div class="result-block" style="animation-delay:${delay}ms">
+    <div class="result-head">
+      <span class="result-lang">${lang}</span>
+      <button class="copy-btn" data-copy="${tid}" onclick="copyText('${tid}')">Copy</button>
+    </div>
+    <div class="result-body ${cls}" id="${tid}">${text}</div>
+  </div>`;
+}
+
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500);
+}
+</script>
+</body>
+</html>
