@@ -3,290 +3,762 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kala Bazar</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Kala Bazar — Indian Tribal Art AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:#FAF7F2;color:#2D1F14;font-family:'Inter',sans-serif;min-height:100vh;}
-
-nav{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:16px 32px;border-bottom:1px solid #E8DDD0;background:#fff;
+:root{
+  --saffron:#E8650A;--saffron-l:#F4874A;--saffron-p:#FEF0E6;
+  --turmeric:#D4A017;--turmeric-p:#FDF6DC;
+  --indigo:#2C3E7A;--indigo-l:#4A5FA8;--indigo-p:#EEF1FA;
+  --crimson:#B52020;--crimson-p:#FDEAEA;
+  --green:#2E7D4F;--green-p:#E8F5EE;
+  --cream:#FDF8F0;--cream2:#F9F0E2;--parchment:#F2E8D5;
+  --ink:#1A0F05;--ink2:#3D2B10;--ink3:#7A5C3A;--ink4:#B8956A;
+  --border:#E2CEAE;--border-s:#C9A87A;
+  --white:#FFFCF7;
+  --sh:0 2px 20px rgba(60,30,5,0.10);--sh-lg:0 8px 40px rgba(60,30,5,0.14);
 }
-.logo{font-family:'Playfair Display',serif;font-size:20px;font-style:italic;color:#B85C2C;}
-.nav-tag{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#A0896E;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--cream);color:var(--ink);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(circle at 15% 20%,rgba(232,101,10,0.06) 0%,transparent 50%),
+    radial-gradient(circle at 85% 80%,rgba(44,62,122,0.06) 0%,transparent 50%),
+    radial-gradient(circle at 50% 50%,rgba(212,160,23,0.04) 0%,transparent 60%);}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Ccircle cx='40' cy='40' r='2' fill='%23E8650A' fill-opacity='0.06'/%3E%3Cpath d='M40 10L43 18L40 14L37 18Z' fill='%23D4A017' fill-opacity='0.06'/%3E%3Cpath d='M40 70L43 62L40 66L37 62Z' fill='%23D4A017' fill-opacity='0.06'/%3E%3Cpath d='M10 40L18 43L14 40L18 37Z' fill='%232C3E7A' fill-opacity='0.06'/%3E%3Cpath d='M70 40L62 43L66 40L62 37Z' fill='%232C3E7A' fill-opacity='0.06'/%3E%3Ccircle cx='20' cy='20' r='1.5' fill='%23B52020' fill-opacity='0.05'/%3E%3Ccircle cx='60' cy='60' r='1.5' fill='%23B52020' fill-opacity='0.05'/%3E%3Ccircle cx='20' cy='60' r='1.5' fill='%232E7D4F' fill-opacity='0.05'/%3E%3Ccircle cx='60' cy='20' r='1.5' fill='%232E7D4F' fill-opacity='0.05'/%3E%3C/g%3E%3C/svg%3E");}
 
-.wrapper{max-width:600px;margin:0 auto;padding:36px 20px 60px;}
+/* FOLK STRIPE */
+.folk-stripe{height:7px;background:repeating-linear-gradient(90deg,var(--saffron) 0 20px,var(--turmeric) 20px 40px,var(--indigo) 40px 60px,var(--crimson) 60px 80px,var(--green) 80px 100px);}
 
-.page-title{text-align:center;margin-bottom:32px;}
-.page-title h1{font-family:'Playfair Display',serif;font-size:28px;color:#2D1F14;margin-bottom:6px;}
-.page-title p{font-size:13px;color:#A0896E;}
+/* INTRO */
+#intro{position:fixed;inset:0;z-index:999;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;transition:opacity .6s,transform .6s;}
+#intro.hide{opacity:0;transform:scale(1.04);pointer-events:none;}
+.intro-mandala{width:110px;height:110px;margin-bottom:20px;animation:float 3s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.intro-title{font-family:'Playfair Display',serif;font-size:clamp(34px,6vw,56px);font-weight:700;color:var(--ink);text-align:center;line-height:1.1;margin-bottom:6px;}
+.intro-title .hi{color:var(--saffron);font-style:italic;}
+.intro-deva{font-family:'Tiro Devanagari Hindi',serif;font-size:20px;color:var(--turmeric);margin-bottom:14px;text-align:center;letter-spacing:2px;}
+.intro-tag{font-size:14px;color:var(--ink3);text-align:center;max-width:460px;line-height:1.7;margin-bottom:32px;}
+.intro-cards{display:flex;gap:16px;margin-bottom:32px;flex-wrap:wrap;justify-content:center;}
+.intro-card{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:22px 24px;width:215px;text-align:center;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.intro-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.intro-card.c::before{background:var(--saffron);}
+.intro-card.s::before{background:var(--indigo);}
+.intro-card:hover{box-shadow:var(--sh-lg);transform:translateY(-3px);}
+.intro-card-icon{font-size:30px;margin-bottom:10px;}
+.intro-card-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--ink);margin-bottom:6px;}
+.intro-card-desc{font-size:12px;color:var(--ink3);line-height:1.6;}
+.intro-card-btn{display:inline-block;margin-top:14px;padding:8px 20px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border:none;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .2s;}
+.intro-card.c .intro-card-btn{background:var(--saffron);color:#fff;}
+.intro-card.s .intro-card-btn{background:var(--indigo);color:#fff;}
+.intro-skip{font-size:11px;color:var(--ink4);text-decoration:underline;cursor:pointer;border:none;background:none;font-family:'Nunito',sans-serif;}
 
-.card{background:#fff;border:1px solid #E8DDD0;border-radius:10px;padding:22px;margin-bottom:14px;}
-.card-label{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:#B85C2C;font-weight:500;margin-bottom:14px;}
+/* NAV */
+nav{position:relative;z-index:100;background:var(--white);border-bottom:1px solid var(--border);box-shadow:0 1px 12px rgba(60,30,5,0.07);}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:12px 28px;}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo-ring{width:34px;height:34px;background:var(--saffron);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 2px 8px rgba(232,101,10,0.3);}
+.nav-logo-name{font-family:'Playfair Display',serif;font-size:21px;font-weight:700;color:var(--ink);}
+.nav-logo-name span{color:var(--saffron);font-style:italic;}
+.mode-tabs{display:flex;gap:3px;background:var(--parchment);border-radius:9px;padding:4px;}
+.mode-tab{padding:7px 18px;border-radius:6px;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;color:var(--ink3);background:none;transition:all .2s;display:flex;align-items:center;gap:6px;}
+.mode-tab.active{background:var(--white);color:var(--saffron);box-shadow:0 1px 6px rgba(60,30,5,0.1);}
+.mode-tab.active.sch{color:var(--indigo);}
+.hist-pill{display:flex;align-items:center;gap:6px;padding:7px 14px;border:1.5px solid var(--border);background:none;border-radius:8px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;color:var(--ink3);transition:all .2s;}
+.hist-pill:hover{border-color:var(--saffron);color:var(--saffron);}
+.hc{background:var(--saffron);color:#fff;font-size:10px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
 
-.upload-zone{
-  border:2px dashed #E0CDB8;border-radius:8px;padding:32px 20px;
-  text-align:center;cursor:pointer;position:relative;
-  transition:border-color 0.2s,background 0.2s;background:#FDFAF6;
-}
-.upload-zone:hover,.upload-zone.dragover{border-color:#B85C2C;background:#FFF7F2;}
-.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
-.upload-icon{
-  width:40px;height:40px;margin:0 auto 10px;background:#FFF0E6;
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-}
-.upload-icon svg{stroke:#B85C2C;width:18px;height:18px;}
-.upload-main{font-size:14px;color:#5C3D26;margin-bottom:4px;}
-.upload-sub{font-size:11px;color:#C4A882;}
+/* LAYOUT */
+.wrap{position:relative;z-index:10;max-width:1100px;margin:0 auto;padding:28px 24px 80px;display:grid;grid-template-columns:1fr 330px;gap:22px;align-items:start;}
 
-#preview-wrap{display:none;margin-top:14px;}
-#preview-img{width:100%;max-height:200px;object-fit:contain;border-radius:6px;border:1px solid #E8DDD0;}
-.preview-bar{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
-.preview-status{font-size:11px;color:#7A9A5A;}
-.preview-clear{font-size:11px;color:#B85C2C;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;}
+/* SECTION */
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.sh-icon{font-size:20px;}
+.sh-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--ink2);}
+.sh-badge{font-size:10px;letter-spacing:2px;text-transform:uppercase;padding:3px 10px;border-radius:20px;font-weight:700;}
+.sh-badge.sa{background:var(--saffron-p);color:var(--saffron);border:1px solid rgba(232,101,10,0.2);}
+.sh-badge.in{background:var(--indigo-p);color:var(--indigo);border:1px solid rgba(44,62,122,0.2);}
 
-.lang-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
-.lang-opt{position:relative;}
-.lang-opt input{position:absolute;opacity:0;width:0;height:0;}
-.lang-tile{
-  display:flex;flex-direction:column;align-items:center;padding:10px 4px;
-  border:1.5px solid #E8DDD0;border-radius:8px;cursor:pointer;
-  transition:all 0.18s;background:#FDFAF6;text-align:center;
-}
-.lang-tile:hover{border-color:#D4926A;background:#FFF7F2;}
-.lang-opt input:checked + .lang-tile{border-color:#B85C2C;background:#FFF0E6;}
-.lang-name{font-size:12px;font-weight:500;color:#3D2410;margin-bottom:3px;}
-.lang-script{font-size:11px;color:#C4A882;}
-.lang-opt input:checked + .lang-tile .lang-name{color:#B85C2C;}
+/* CARD */
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:16px;box-shadow:var(--sh);position:relative;overflow:hidden;}
+.cstripe{height:3px;position:absolute;top:0;left:0;right:0;}
+.cstripe.sa{background:linear-gradient(90deg,var(--saffron),var(--turmeric));}
+.cstripe.in{background:linear-gradient(90deg,var(--indigo),var(--indigo-l));}
+.clbl{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.clbl.sa{color:var(--saffron);}
+.clbl.in{color:var(--indigo);}
+.clbl::before{content:'';flex:1;height:1px;background:var(--border);}
 
-.btn{
-  width:100%;padding:14px;background:#B85C2C;color:#fff;border:none;border-radius:8px;
-  cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;
-  letter-spacing:1px;text-transform:uppercase;
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  transition:background 0.2s,box-shadow 0.2s;
-}
-.btn:hover{background:#A0491F;box-shadow:0 4px 16px rgba(184,92,44,0.25);}
-.btn:disabled{opacity:0.55;cursor:not-allowed;box-shadow:none;}
-.spinner{
-  display:none;width:14px;height:14px;
-  border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;
-  border-radius:50%;animation:spin 0.7s linear infinite;
-}
+/* UPLOAD */
+.upz{border:2px dashed var(--border-s);border-radius:10px;padding:28px 20px;text-align:center;cursor:pointer;position:relative;transition:all .22s;background:var(--cream2);min-height:150px;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.upz:hover,.upz.dv{border-color:var(--saffron);background:var(--saffron-p);}
+.upz.sch:hover,.upz.sch.dv{border-color:var(--indigo);background:var(--indigo-p);}
+.upz input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.up-ring{width:50px;height:50px;border:2px solid var(--border-s);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;background:var(--white);font-size:20px;transition:all .22s;}
+.upz:hover .up-ring{border-color:var(--saffron);box-shadow:0 0 0 6px rgba(232,101,10,0.08);}
+.upz.sch:hover .up-ring{border-color:var(--indigo);box-shadow:0 0 0 6px rgba(44,62,122,0.08);}
+.up-main{font-size:14px;color:var(--ink2);font-weight:600;margin-bottom:3px;}
+.up-sub{font-size:11px;color:var(--ink4);}
+.prev-wrap{display:none;margin-top:12px;}
+.prev-img{width:100%;max-height:210px;object-fit:contain;border-radius:8px;border:1px solid var(--border);}
+.prev-bar{display:flex;align-items:center;justify-content:space-between;margin-top:7px;}
+.prev-ok{font-size:12px;color:var(--green);font-weight:600;}
+.prev-rm{font-size:12px;color:var(--ink4);background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;transition:color .15s;}
+.prev-rm:hover{color:var(--crimson);}
+
+/* CUSTOM GRID */
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+.cg label{display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--ink3);margin-bottom:6px;}
+.csel{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;background:var(--white);color:var(--ink2);font-family:'Nunito',sans-serif;font-size:13px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 7L11 1' stroke='%237A5C3A' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;cursor:pointer;transition:border-color .18s;}
+.csel:focus{outline:none;border-color:var(--saffron);}
+.chips{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);font-size:12px;font-weight:600;color:var(--ink3);cursor:pointer;transition:all .18s;font-family:'Nunito',sans-serif;}
+.chip:hover{border-color:var(--saffron-l);color:var(--saffron);}
+.chip.sel{background:var(--saffron-p);border-color:var(--saffron);color:var(--saffron);}
+.chip.sel.in{background:var(--indigo-p);border-color:var(--indigo);color:var(--indigo);}
+
+/* LANG GRID */
+.lgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.lo{position:relative;}
+.lo input{position:absolute;opacity:0;width:0;height:0;}
+.lt{display:flex;flex-direction:column;align-items:center;padding:10px 4px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;transition:all .18s;background:var(--cream2);text-align:center;}
+.lt:hover{border-color:var(--saffron-l);background:var(--saffron-p);}
+.lo input:checked+.lt{border-color:var(--saffron);background:var(--saffron-p);}
+.lo.sl input:checked+.lt{border-color:var(--indigo);background:var(--indigo-p);}
+.lo.sl .lt:hover{border-color:var(--indigo-l);background:var(--indigo-p);}
+.ln{font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:2px;}
+.ls{font-size:12px;color:var(--ink4);font-family:'Tiro Devanagari Hindi',serif;}
+.lo input:checked+.lt .ln{color:var(--saffron);}
+.lo.sl input:checked+.lt .ln{color:var(--indigo);}
+
+/* SCHOLAR Q */
+.qchips{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;}
+.qchip{padding:7px 13px;border-radius:20px;border:1.5px solid var(--border);background:var(--white);font-size:12px;font-weight:600;color:var(--ink3);cursor:pointer;transition:all .18s;font-family:'Nunito',sans-serif;}
+.qchip:hover{border-color:var(--indigo-l);color:var(--indigo);}
+.qchip.sel{background:var(--indigo-p);border-color:var(--indigo);color:var(--indigo);}
+.custom-q{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;background:var(--white);color:var(--ink2);font-family:'Nunito',sans-serif;font-size:13px;resize:none;height:68px;margin-top:8px;transition:border-color .18s;}
+.custom-q:focus{outline:none;border-color:var(--indigo);}
+
+/* BUTTON */
+.btn{width:100%;padding:15px;border:none;border-radius:10px;cursor:pointer;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .22s;margin-top:4px;}
+.btn.sa{background:linear-gradient(135deg,var(--saffron),#C9530A);color:#fff;box-shadow:0 4px 16px rgba(232,101,10,0.3);}
+.btn.sa:hover{background:linear-gradient(135deg,#c9560a,#A83E08);box-shadow:0 6px 24px rgba(232,101,10,0.4);transform:translateY(-1px);}
+.btn.in{background:linear-gradient(135deg,var(--indigo),#1F2D5E);color:#fff;box-shadow:0 4px 16px rgba(44,62,122,0.3);}
+.btn.in:hover{background:linear-gradient(135deg,#233268,#18234A);box-shadow:0 6px 24px rgba(44,62,122,0.4);transform:translateY(-1px);}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none !important;box-shadow:none !important;}
+.sp{display:none;width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-#results{display:none;margin-top:14px;}
-.result-block{
-  background:#fff;border:1px solid #E8DDD0;border-radius:10px;
-  overflow:hidden;margin-bottom:10px;
-  animation:up 0.35s ease forwards;opacity:0;
-}
-@keyframes up{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-.result-head{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:9px 14px;background:#FAF7F2;border-bottom:1px solid #F0E8DC;
-}
-.result-lang{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:600;color:#B85C2C;}
-.copy-btn{
-  font-size:10px;letter-spacing:1px;text-transform:uppercase;
-  color:#A0896E;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:color 0.15s;
-}
-.copy-btn:hover{color:#B85C2C;}
-.result-body{padding:14px;font-size:15px;line-height:1.7;color:#2D1F14;}
-.result-body.tr{font-size:14px;color:#5C3D26;font-style:italic;}
+/* RESULTS */
+.rb{background:var(--white);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px;animation:su .4s ease forwards;opacity:0;box-shadow:var(--sh);}
+@keyframes su{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.rb-h{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--cream2);border-bottom:1px solid var(--border);}
+.rb-l{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:var(--saffron);}
+.rb-l.in{color:var(--indigo);}
+.rb-b{padding:16px;font-size:15px;line-height:1.75;color:var(--ink);}
+.rb-b.tr{font-size:14px;color:var(--ink2);}
+.art-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--saffron);margin-bottom:8px;display:block;}
+.art-name.in{color:var(--indigo);}
+.art-tag{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600;}
+.cpbtn{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--ink4);background:none;border:1px solid transparent;border-radius:4px;cursor:pointer;padding:4px 10px;font-family:'Nunito',sans-serif;font-weight:600;transition:all .15s;}
+.cpbtn:hover{color:var(--saffron);border-color:rgba(232,101,10,0.3);}
 
-.toast{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-  background:#2D1F14;color:#FAF7F2;padding:10px 20px;border-radius:6px;
-  font-size:12px;opacity:0;transition:opacity 0.25s;pointer-events:none;z-index:99;
-}
+/* THINKING */
+.thinking{display:none;flex-direction:column;align-items:center;gap:12px;padding:32px;text-align:center;margin-top:8px;}
+.thinking.on{display:flex;}
+.thsp{width:40px;height:40px;border:3px solid var(--border);border-radius:50%;animation:spin 1s linear infinite;}
+.thsp.sa{border-top-color:var(--saffron);}
+.thsp.in{border-top-color:var(--indigo);}
+.th-t{font-size:13px;color:var(--ink3);font-weight:600;}
+.th-s{font-size:11px;color:var(--ink4);}
+
+/* HISTORY PANEL */
+.hpanel{background:var(--white);border:1px solid var(--border);border-radius:14px;box-shadow:var(--sh);overflow:hidden;position:sticky;top:90px;max-height:calc(100vh - 130px);display:flex;flex-direction:column;}
+.hp-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--cream2);}
+.hp-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--ink2);display:flex;align-items:center;gap:8px;}
+.hp-clr{font-size:11px;color:var(--ink4);background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;transition:color .15s;}
+.hp-clr:hover{color:var(--crimson);}
+.hp-list{overflow-y:auto;flex:1;padding:10px;}
+.hp-list::-webkit-scrollbar{width:3px;}
+.hp-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.hp-item{padding:11px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all .18s;background:var(--cream);}
+.hp-item:hover{border-color:var(--saffron-l);background:var(--saffron-p);}
+.hp-item.sch:hover{border-color:var(--indigo-l);background:var(--indigo-p);}
+.hp-prev{width:100%;height:55px;object-fit:cover;border-radius:6px;margin-bottom:6px;border:1px solid var(--border);}
+.hp-top{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;margin-bottom:3px;}
+.hp-an{font-family:'Playfair Display',serif;font-size:13px;font-weight:700;color:var(--ink2);line-height:1.3;}
+.hm-badge{font-size:9px;letter-spacing:1px;text-transform:uppercase;font-weight:700;padding:2px 7px;border-radius:10px;flex-shrink:0;}
+.hm-badge.c{background:var(--saffron-p);color:var(--saffron);}
+.hm-badge.s{background:var(--indigo-p);color:var(--indigo);}
+.hp-snip{font-size:11px;color:var(--ink4);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.hp-t{font-size:10px;color:var(--ink4);margin-top:4px;}
+.hp-empty{padding:36px 16px;text-align:center;font-size:13px;color:var(--ink4);}
+.hp-empty-i{font-size:30px;margin-bottom:8px;}
+
+/* MODAL */
+.moverlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(26,15,5,.5);backdrop-filter:blur(2px);align-items:center;justify-content:center;padding:20px;}
+.moverlay.open{display:flex;}
+.modal{background:var(--white);border-radius:16px;max-width:580px;width:100%;max-height:82vh;overflow-y:auto;box-shadow:var(--sh-lg);}
+.modal::-webkit-scrollbar{width:4px;}
+.modal::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+.mh{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--cream2);position:sticky;top:0;}
+.mt{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--ink2);}
+.mc{background:none;border:none;cursor:pointer;font-size:20px;color:var(--ink4);padding:2px 6px;}
+.mc:hover{color:var(--crimson);}
+.mb{padding:20px 22px;}
+.m-img{width:100%;max-height:190px;object-fit:contain;border-radius:8px;border:1px solid var(--border);margin-bottom:14px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:10px 22px;border-radius:8px;font-size:12px;font-weight:600;opacity:0;transition:opacity .25s;pointer-events:none;z-index:999;white-space:nowrap;}
 .toast.show{opacity:1;}
 
-@media(max-width:480px){
-  .lang-grid{grid-template-columns:repeat(3,1fr);}
-  nav{padding:14px 20px;}
-  .wrapper{padding:28px 16px 48px;}
+/* MODE VISIBILITY */
+.cr,.sc{display:none;}
+body.mc .cr{display:block;}
+body.ms .sc{display:block;}
+
+@media(max-width:860px){
+  .wrap{grid-template-columns:1fr;padding:16px 16px 60px;}
+  .right-col{display:none;}
+  .nav-inner{padding:10px 16px;}
+  .lgrid{grid-template-columns:repeat(3,1fr);}
+  .cg{grid-template-columns:1fr;}
+  .mode-tab span{display:none;}
 }
 </style>
 </head>
 <body>
+<div class="folk-stripe"></div>
 
+<!-- INTRO -->
+<div id="intro">
+  <div class="intro-mandala">
+    <svg viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="55" cy="55" r="52" stroke="#E2CEAE" stroke-width="1"/>
+      <circle cx="55" cy="55" r="42" stroke="#C9A87A" stroke-width="1"/>
+      <circle cx="55" cy="55" r="28" stroke="#B8956A" stroke-width="1.5"/>
+      <circle cx="55" cy="55" r="9" fill="#E8650A" opacity=".85"/>
+      <circle cx="55" cy="55" r="5" fill="#D4A017"/>
+      <ellipse cx="55" cy="29" rx="3.5" ry="9" fill="#E8650A" opacity=".5"/>
+      <ellipse cx="55" cy="29" rx="3.5" ry="9" fill="#E8650A" opacity=".5" transform="rotate(45 55 55)"/>
+      <ellipse cx="55" cy="29" rx="3.5" ry="9" fill="#E8650A" opacity=".5" transform="rotate(90 55 55)"/>
+      <ellipse cx="55" cy="29" rx="3.5" ry="9" fill="#E8650A" opacity=".5" transform="rotate(135 55 55)"/>
+      <ellipse cx="55" cy="29" rx="3.5" ry="9" fill="#E8650A" opacity=".5" transform="rotate(180 55 55)"/>
+      <ellipse cx="55" cy="29" rx="3.5" ry="9" fill="#E8650A" opacity=".5" transform="rotate(225 55 55)"/>
+      <ellipse cx="55" cy="29" rx="3.5" ry="9" fill="#E8650A" opacity=".5" transform="rotate(270 55 55)"/>
+      <ellipse cx="55" cy="29" rx="3.5" ry="9" fill="#E8650A" opacity=".5" transform="rotate(315 55 55)"/>
+      <circle cx="55" cy="13" r="2.5" fill="#D4A017" transform="rotate(0 55 55)"/>
+      <circle cx="55" cy="13" r="2.5" fill="#D4A017" transform="rotate(45 55 55)"/>
+      <circle cx="55" cy="13" r="2.5" fill="#D4A017" transform="rotate(90 55 55)"/>
+      <circle cx="55" cy="13" r="2.5" fill="#D4A017" transform="rotate(135 55 55)"/>
+      <circle cx="55" cy="13" r="2.5" fill="#D4A017" transform="rotate(180 55 55)"/>
+      <circle cx="55" cy="13" r="2.5" fill="#D4A017" transform="rotate(225 55 55)"/>
+      <circle cx="55" cy="13" r="2.5" fill="#D4A017" transform="rotate(270 55 55)"/>
+      <circle cx="55" cy="13" r="2.5" fill="#D4A017" transform="rotate(315 55 55)"/>
+    </svg>
+  </div>
+  <div class="intro-title">Welcome to <span class="hi">Kala Bazar</span></div>
+  <div class="intro-deva">कला बाज़ार — भारतीय जनजातीय कला</div>
+  <p class="intro-tag">Discover, describe and preserve India's living tribal art traditions.<br>Upload any artwork — our AI unveils the story behind it.</p>
+  <div class="intro-cards">
+    <div class="intro-card c" onclick="enterMode('creator')">
+      <div class="intro-card-icon">🎨</div>
+      <div class="intro-card-title">Art Creator</div>
+      <p class="intro-card-desc">Get the artwork name, a rich description, and multilingual translations.</p>
+      <button class="intro-card-btn">Start Creating</button>
+    </div>
+    <div class="intro-card s" onclick="enterMode('scholar')">
+      <div class="intro-card-icon">📜</div>
+      <div class="intro-card-title">Art Scholar</div>
+      <p class="intro-card-desc">Upload an artwork and ask deep questions about its history and cultural roots.</p>
+      <button class="intro-card-btn">Explore History</button>
+    </div>
+  </div>
+  <button class="intro-skip" onclick="enterMode('creator')">Skip intro → Enter as Creator</button>
+</div>
+
+<!-- NAV -->
 <nav>
-  <div class="logo">Kala Bazar</div>
-  <div class="nav-tag">AI · Tribal Art</div>
+  <div class="nav-inner">
+    <a class="nav-logo" href="#">
+      <div class="nav-logo-ring">🪷</div>
+      <div class="nav-logo-name"><span>Kala</span> Bazar</div>
+    </a>
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="tab-c" onclick="switchMode('creator')">🎨 <span>Creator</span></button>
+      <button class="mode-tab sch" id="tab-s" onclick="switchMode('scholar')">📜 <span>Scholar</span></button>
+    </div>
+    <button class="hist-pill" onclick="openHistModal()">📋 History <span class="hc" id="hc">0</span></button>
+  </div>
 </nav>
 
-<div class="wrapper">
-  <div class="page-title">
-    <h1>Describe Tribal Artwork</h1>
-    <p>Upload an image · Pick languages · Get AI descriptions</p>
-  </div>
+<!-- MAIN -->
+<div class="wrap">
+  <div class="left-col">
 
-  <div class="card">
-    <div class="card-label">Step 1 — Upload Artwork</div>
-    <div class="upload-zone" id="dropZone">
-      <input type="file" id="imageInput" accept="image/*" onchange="previewImage(this)">
-      <div id="uploadEmpty">
-        <div class="upload-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
-            <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
-          </svg>
+    <!-- CREATOR -->
+    <div class="cr">
+      <div class="sh"><span class="sh-icon">🎨</span><div class="sh-title">Describe Tribal Artwork</div><span class="sh-badge sa">Creator Mode</span></div>
+
+      <div class="card">
+        <div class="cstripe sa"></div>
+        <div class="clbl sa">Step 1 — Upload Artwork</div>
+        <div class="upz" id="dz1" ondragover="dzEv(event,true,'dz1')" ondragleave="dzEv(event,false,'dz1')" ondrop="dzDrop(event,'dz1','fi1')">
+          <input type="file" id="fi1" accept="image/*" onchange="prevImg('fi1','pw1','pi1','ue1')">
+          <div id="ue1">
+            <div class="up-ring">🖼️</div>
+            <div class="up-main">Drop artwork or click to browse</div>
+            <div class="up-sub">PNG · JPG · WEBP · Max 10MB</div>
+          </div>
         </div>
-        <div class="upload-main">Drop artwork here or click to browse</div>
-        <div class="upload-sub">PNG · JPG · WEBP · Max 10MB</div>
+        <div class="prev-wrap" id="pw1">
+          <img class="prev-img" id="pi1" src="" alt="">
+          <div class="prev-bar">
+            <span class="prev-ok">✓ Image ready</span>
+            <button class="prev-rm" onclick="clearImg('fi1','pw1','pi1','ue1')">Remove ✕</button>
+          </div>
+        </div>
       </div>
+
+      <div class="card">
+        <div class="cstripe sa"></div>
+        <div class="clbl sa">Step 2 — Customise Generation</div>
+        <div class="cg">
+          <div><label>Description Length</label>
+            <select class="csel" id="c-len">
+              <option value="short">Short (2–3 lines)</option>
+              <option value="medium" selected>Medium (1 paragraph)</option>
+              <option value="detailed">Detailed (2–3 paragraphs)</option>
+            </select>
+          </div>
+          <div><label>Audience</label>
+            <select class="csel" id="c-aud">
+              <option value="general">General Public</option>
+              <option value="buyer">Art Buyer</option>
+              <option value="student">Student / Researcher</option>
+              <option value="children">Children</option>
+            </select>
+          </div>
+        </div>
+        <div><label style="display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:700;color:var(--ink3);margin-bottom:8px;">Writing Tone</label>
+          <div class="chips">
+            <span class="chip sel" data-tone="poetic" onclick="pickTone(this)">Poetic</span>
+            <span class="chip" data-tone="informative" onclick="pickTone(this)">Informative</span>
+            <span class="chip" data-tone="storytelling" onclick="pickTone(this)">Storytelling</span>
+            <span class="chip" data-tone="academic" onclick="pickTone(this)">Academic</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cstripe sa"></div>
+        <div class="clbl sa">Step 3 — Output Languages</div>
+        <div class="lgrid">
+          <div class="lo"><input type="checkbox" id="l1" value="hindi"><label class="lt" for="l1"><span class="ln">Hindi</span><span class="ls">हिन्दी</span></label></div>
+          <div class="lo"><input type="checkbox" id="l2" value="marathi"><label class="lt" for="l2"><span class="ln">Marathi</span><span class="ls">मराठी</span></label></div>
+          <div class="lo"><input type="checkbox" id="l3" value="bengali"><label class="lt" for="l3"><span class="ln">Bengali</span><span class="ls">বাংলা</span></label></div>
+          <div class="lo"><input type="checkbox" id="l4" value="tamil"><label class="lt" for="l4"><span class="ln">Tamil</span><span class="ls">தமிழ்</span></label></div>
+          <div class="lo"><input type="checkbox" id="l5" value="telugu"><label class="lt" for="l5"><span class="ln">Telugu</span><span class="ls">తెలుగు</span></label></div>
+        </div>
+      </div>
+
+      <button class="btn sa" id="cbtn" onclick="genCreator()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <span id="clbl2">Generate Name &amp; Description</span>
+        <div class="sp" id="sp1"></div>
+      </button>
     </div>
-    <div id="preview-wrap">
-      <img id="preview-img" src="" alt="">
-      <div class="preview-bar">
-        <span class="preview-status">✓ Image ready</span>
-        <button class="preview-clear" onclick="clearPreview()">Remove</button>
+
+    <!-- SCHOLAR -->
+    <div class="sc">
+      <div class="sh"><span class="sh-icon">📜</span><div class="sh-title">Explore Art History</div><span class="sh-badge in">Scholar Mode</span></div>
+
+      <div class="card">
+        <div class="cstripe in"></div>
+        <div class="clbl in">Step 1 — Upload the Artwork</div>
+        <div class="upz sch" id="dz2" ondragover="dzEv(event,true,'dz2')" ondragleave="dzEv(event,false,'dz2')" ondrop="dzDrop(event,'dz2','fi2')">
+          <input type="file" id="fi2" accept="image/*" onchange="prevImg('fi2','pw2','pi2','ue2')">
+          <div id="ue2">
+            <div class="up-ring">🏺</div>
+            <div class="up-main">Drop the artwork to study</div>
+            <div class="up-sub">PNG · JPG · WEBP · Max 10MB</div>
+          </div>
+        </div>
+        <div class="prev-wrap" id="pw2">
+          <img class="prev-img" id="pi2" src="" alt="">
+          <div class="prev-bar">
+            <span class="prev-ok">✓ Image ready</span>
+            <button class="prev-rm" onclick="clearImg('fi2','pw2','pi2','ue2')">Remove ✕</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="cstripe in"></div>
+        <div class="clbl in">Step 2 — What Do You Want to Know?</div>
+        <div class="qchips">
+          <span class="qchip sel" data-q="Tell me the history and origins of this art form." onclick="pickQ(this)">🏛️ History &amp; Origins</span>
+          <span class="qchip" data-q="Explain the symbols and motifs and their cultural meanings." onclick="pickQ(this)">🔣 Symbols &amp; Meanings</span>
+          <span class="qchip" data-q="Who are the tribal communities that make this art? Describe their culture." onclick="pickQ(this)">👥 Tribal Community</span>
+          <span class="qchip" data-q="What techniques and materials are traditionally used to create this art?" onclick="pickQ(this)">🖌️ Techniques &amp; Materials</span>
+          <span class="qchip" data-q="How has this art form evolved over time and what is its current status?" onclick="pickQ(this)">📈 Evolution &amp; Status</span>
+          <span class="qchip" data-q="custom" onclick="pickQ(this)">✏️ Custom Question</span>
+        </div>
+        <textarea class="custom-q" id="cqtxt" placeholder="Type your own question about this artwork…" style="display:none;"></textarea>
+
+        <div style="margin-top:14px;">
+          <div style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--ink3);margin-bottom:8px;">Response Language</div>
+          <div class="lgrid">
+            <div class="lo sl"><input type="checkbox" id="s1" value="hindi"><label class="lt" for="s1"><span class="ln">Hindi</span><span class="ls">हिन्दी</span></label></div>
+            <div class="lo sl"><input type="checkbox" id="s2" value="marathi"><label class="lt" for="s2"><span class="ln">Marathi</span><span class="ls">मराठी</span></label></div>
+            <div class="lo sl"><input type="checkbox" id="s3" value="bengali"><label class="lt" for="s3"><span class="ln">Bengali</span><span class="ls">বাংলা</span></label></div>
+            <div class="lo sl"><input type="checkbox" id="s4" value="tamil"><label class="lt" for="s4"><span class="ln">Tamil</span><span class="ls">தமிழ்</span></label></div>
+            <div class="lo sl"><input type="checkbox" id="s5" value="telugu"><label class="lt" for="s5"><span class="ln">Telugu</span><span class="ls">తెలుగు</span></label></div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn in" id="sbtn" onclick="genScholar()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        <span id="slbl">Explore Art History</span>
+        <div class="sp" id="sp2"></div>
+      </button>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="thinking" id="thk"><div class="thsp sa" id="thsp"></div><div class="th-t" id="tht">AI is reading the artwork…</div><div class="th-s">Identifying patterns, symbols &amp; cultural context</div></div>
+    <div id="ra" style="margin-top:8px;"></div>
+  </div>
+
+  <!-- RIGHT: HISTORY -->
+  <div class="right-col">
+    <div class="hpanel">
+      <div class="hp-head">
+        <div class="hp-title">📋 History</div>
+        <button class="hp-clr" onclick="clearHist()">Clear all</button>
+      </div>
+      <div class="hp-list" id="hlist">
+        <div class="hp-empty" id="hemp"><div class="hp-empty-i">🪔</div><div>No generations yet.<br>Upload artwork to begin.</div></div>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="card">
-    <div class="card-label">Step 2 — Choose Languages</div>
-    <div class="lang-grid">
-      <div class="lang-opt">
-        <input type="checkbox" id="l-hi" value="hindi">
-        <label class="lang-tile" for="l-hi">
-          <span class="lang-name">Hindi</span>
-          <span class="lang-script">हिन्दी</span>
-        </label>
-      </div>
-      <div class="lang-opt">
-        <input type="checkbox" id="l-mr" value="marathi">
-        <label class="lang-tile" for="l-mr">
-          <span class="lang-name">Marathi</span>
-          <span class="lang-script">मराठी</span>
-        </label>
-      </div>
-      <div class="lang-opt">
-        <input type="checkbox" id="l-bn" value="bengali">
-        <label class="lang-tile" for="l-bn">
-          <span class="lang-name">Bengali</span>
-          <span class="lang-script">বাংলা</span>
-        </label>
-      </div>
-      <div class="lang-opt">
-        <input type="checkbox" id="l-ta" value="tamil">
-        <label class="lang-tile" for="l-ta">
-          <span class="lang-name">Tamil</span>
-          <span class="lang-script">தமிழ்</span>
-        </label>
-      </div>
-      <div class="lang-opt">
-        <input type="checkbox" id="l-te" value="telugu">
-        <label class="lang-tile" for="l-te">
-          <span class="lang-name">Telugu</span>
-          <span class="lang-script">తెలుగు</span>
-        </label>
-      </div>
-    </div>
+<!-- HISTORY MODAL -->
+<div class="moverlay" id="hmodal" onclick="if(event.target===this)closeM()">
+  <div class="modal">
+    <div class="mh"><div class="mt" id="mtitle">Detail</div><button class="mc" onclick="closeM()">✕</button></div>
+    <div class="mb" id="mbody"></div>
   </div>
-
-  <button class="btn" id="generateBtn" onclick="uploadImage()">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-    </svg>
-    <span id="btnLabel">Generate Description</span>
-    <div class="spinner" id="spinner"></div>
-  </button>
-
-  <div id="results"></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const dropZone=document.getElementById('dropZone');
-dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragover');});
-dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragover'));
-dropZone.addEventListener('drop',e=>{
-  e.preventDefault();dropZone.classList.remove('dragover');
-  const f=e.dataTransfer.files[0];
-  if(f){document.getElementById('imageInput').files=e.dataTransfer.files;previewImage(document.getElementById('imageInput'));}
-});
+let hist = JSON.parse(localStorage.getItem('kb_hist')||'[]');
+let tone = 'poetic';
+let selQ = 'Tell me the history and origins of this art form.';
 
-function previewImage(input){
-  if(!input.files[0])return;
+// INTRO
+function enterMode(m){
+  const el=document.getElementById('intro');
+  el.classList.add('hide');
+  setTimeout(()=>{el.style.display='none';switchMode(m);},600);
+}
+
+// MODE
+function switchMode(m){
+  document.body.classList.remove('mc','ms');
+  document.body.classList.add(m==='creator'?'mc':'ms');
+  document.getElementById('tab-c').classList.toggle('active',m==='creator');
+  document.getElementById('tab-s').classList.toggle('active',m==='scholar');
+  document.getElementById('tab-c').classList.toggle('sch',false);
+  document.getElementById('tab-s').classList.toggle('sch',m==='scholar');
+  document.getElementById('ra').innerHTML='';
+  document.getElementById('thk').classList.remove('on');
+}
+
+// DRAG DROP
+function dzEv(e,on,id){e.preventDefault();document.getElementById(id).classList.toggle('dv',on);}
+function dzDrop(e,zid,fid){
+  e.preventDefault();document.getElementById(zid).classList.remove('dv');
+  const f=e.dataTransfer.files[0];if(!f)return;
+  const dt=new DataTransfer();dt.items.add(f);
+  document.getElementById(fid).files=dt.files;
+  const map={fi1:['pw1','pi1','ue1'],fi2:['pw2','pi2','ue2']};
+  const [pw,pi,ue]=map[fid];prevImg(fid,pw,pi,ue);
+}
+function prevImg(fid,pwid,piid,ueid){
+  const fi=document.getElementById(fid);if(!fi.files[0])return;
   const r=new FileReader();
   r.onload=e=>{
-    document.getElementById('preview-img').src=e.target.result;
-    document.getElementById('preview-wrap').style.display='block';
-    document.getElementById('uploadEmpty').style.display='none';
+    document.getElementById(piid).src=e.target.result;
+    document.getElementById(pwid).style.display='block';
+    document.getElementById(ueid).style.display='none';
   };
-  r.readAsDataURL(input.files[0]);
+  r.readAsDataURL(fi.files[0]);
+}
+function clearImg(fid,pwid,piid,ueid){
+  document.getElementById(pwid).style.display='none';
+  document.getElementById(ueid).style.display='flex';
+  document.getElementById(fid).value='';
+  document.getElementById(piid).src='';
 }
 
-function clearPreview(){
-  document.getElementById('preview-wrap').style.display='none';
-  document.getElementById('uploadEmpty').style.display='block';
-  document.getElementById('imageInput').value='';
+// CHIPS
+function pickTone(el){document.querySelectorAll('.chip[data-tone]').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');tone=el.dataset.tone;}
+function pickQ(el){
+  document.querySelectorAll('.qchip').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');
+  const cq=document.getElementById('cqtxt');
+  if(el.dataset.q==='custom'){cq.style.display='block';selQ='';}
+  else{cq.style.display='none';selQ=el.dataset.q;}
 }
 
-function copyText(id){
-  navigator.clipboard.writeText(document.getElementById(id).innerText).then(()=>{
-    const b=document.querySelector(`[data-copy="${id}"]`);
-    if(b){const o=b.textContent;b.textContent='Copied!';setTimeout(()=>b.textContent=o,1500);}
-  });
-}
+// BASE64
+function toB64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(file);});}
 
-async function uploadImage(){
-  const fi=document.getElementById("imageInput");
-  if(!fi.files[0]){toast("Please select an image");return;}
-  const sel=Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(c=>c.value);
-  if(!sel.length){toast("Select at least one language");return;}
+// CREATOR
+async function genCreator(){
+  const fi=document.getElementById('fi1');
+  if(!fi.files[0]){showToast('Please upload an artwork image');return;}
 
-  const btn=document.getElementById('generateBtn');
-  btn.disabled=true;
-  document.getElementById('spinner').style.display='block';
-  document.getElementById('btnLabel').textContent='Generating…';
+  const langs=Array.from(document.querySelectorAll('#l1,#l2,#l3,#l4,#l5'))
+    .filter(c=>c.checked)
+    .map(c=>c.value);
 
-  const fd=new FormData();
-  fd.append("file",fi.files[0]);
+  const len=document.getElementById('c-len').value;
+  const aud=document.getElementById('c-aud').value;
+
+  setLoad(true,'c');
+
   try{
-    const res=await fetch(`http://127.0.0.1:8000/generate/?languages=${sel.join(",")}`,{method:"POST",body:fd});
-    const data=await res.json();
-    renderResults(data);
-  }catch(e){toast("Could not connect to server. Is it running?");}
+    const formData = new FormData();
+    formData.append("file", fi.files[0]);
+    formData.append("languages", langs.join(","));
+    formData.append("length", len);
+    formData.append("audience", aud);
+    formData.append("tone", tone);
+
+    const response = await fetch("http://localhost:8000/generate/", {
+      method: "POST",
+      body: formData
+    });
+
+    if(!response.ok) throw new Error("Server error");
+
+    const data = await response.json();
+
+    renderCreator(data);
+    saveHist(data.art_name,data.english,'creator',
+      document.getElementById('pi1').src,data,langs);
+
+  }catch(e){
+    console.error(e);
+    showToast('Backend error — check server');
+  }
   finally{
-    btn.disabled=false;
-    document.getElementById('spinner').style.display='none';
-    document.getElementById('btnLabel').textContent='Generate Description';
+    setLoad(false,'c');
   }
 }
 
-function renderResults(data){
-  const names={hindi:'Hindi',marathi:'Marathi',bengali:'Bengali',tamil:'Tamil',telugu:'Telugu'};
-  const el=document.getElementById('results');
-  el.style.display='block';
-  let html='';let d=0;
-  html+=block('eng','English',data.english,'',d);d+=70;
-  for(const[l,t] of Object.entries(data.translations)){html+=block(l,names[l]||l,t,'tr',d);d+=70;}
-  el.innerHTML=html;
-  el.scrollIntoView({behavior:'smooth',block:'nearest'});
+// SCHOLAR
+async function genScholar(){
+  const fi=document.getElementById('fi2');
+  if(!fi.files[0]){showToast('Please upload an artwork image');return;}
+
+  const customTxt=document.getElementById('cqtxt').value.trim();
+  const q=customTxt||selQ;
+  if(!q){showToast('Please select or type a question');return;}
+
+  const langs=Array.from(document.querySelectorAll('#s1,#s2,#s3,#s4,#s5'))
+    .filter(c=>c.checked)
+    .map(c=>c.value);
+
+  setLoad(true,'s');
+
+  try{
+    const formData = new FormData();
+    formData.append("file", fi.files[0]);
+    formData.append("languages", langs.join(","));
+    formData.append("question", q);
+
+    const response = await fetch("http://localhost:8000/generate/history", {
+      method: "POST",
+      body: formData
+    });
+
+    if(!response.ok) throw new Error("Server error");
+
+    const data = await response.json();
+
+    renderScholar(data);
+    saveHist(data.art_name,data.english,'scholar',
+      document.getElementById('pi2').src,data,langs);
+
+  }catch(e){
+    console.error(e);
+    showToast('Backend error — check server');
+  }
+  finally{
+    setLoad(false,'s');
+  }
 }
 
-function block(id,lang,text,cls,delay){
-  const tid=`t-${id}`;
-  return `<div class="result-block" style="animation-delay:${delay}ms">
-    <div class="result-head">
-      <span class="result-lang">${lang}</span>
-      <button class="copy-btn" data-copy="${tid}" onclick="copyText('${tid}')">Copy</button>
+// API CALL
+async function callAPI(sys,userTxt,b64,mt){
+  const resp=await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,
+      messages:[{role:'user',content:[{type:'image',source:{type:'base64',media_type:mt,data:b64}},{type:'text',text:userTxt}]}]})
+  });
+  const data=await resp.json();
+  return data.content.map(c=>c.text||'').join('');
+}
+function parseJSON(raw){return JSON.parse(raw.replace(/```json|```/g,'').trim());}
+
+// RENDER CREATOR
+const LNAMES={hindi:'Hindi हिन्दी',marathi:'Marathi मराठी',bengali:'Bengali বাংলা',tamil:'Tamil தமிழ்',telugu:'Telugu తెలుగు'};
+function renderCreator(d){
+  const ra=document.getElementById('ra');
+  let h=`<div class="rb" style="animation-delay:0ms">
+    <div class="rb-h"><span class="rb-l">🎨 Artwork Identified</span></div>
+    <div class="rb-b">
+      <span class="art-name">${d.artName}</span>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <span class="art-tag" style="background:var(--saffron-p);color:var(--saffron);">🗺️ ${d.region||'India'}</span>
+        <span class="art-tag" style="background:var(--turmeric-p);color:var(--turmeric);">🖼️ ${d.art_style||'Tribal Art'}</span>
+      </div>
     </div>
-    <div class="result-body ${cls}" id="${tid}">${text}</div>
+  </div>`;
+  h+=rBlock('en','English',d.english,false,70);
+  let dd=140;for(const[l,t] of Object.entries(d.translations||{})){h+=rBlock(l,LNAMES[l]||l,t,true,dd);dd+=70;}
+  ra.innerHTML=h;ra.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// RENDER SCHOLAR
+function renderScholar(d){
+  const ra=document.getElementById('ra');
+  let h=`<div class="rb" style="animation-delay:0ms">
+    <div class="rb-h"><span class="rb-l in">📜 Artwork Identified</span></div>
+    <div class="rb-b">
+      <span class="art-name in">${d.artName}</span>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+        <span class="art-tag" style="background:var(--indigo-p);color:var(--indigo);">🗺️ ${d.region||'India'}</span>
+        <span class="art-tag" style="background:var(--indigo-p);color:var(--indigo);">🖼️ ${d.art_style||'Tribal Art'}</span>
+      </div>
+      <div style="font-size:12px;background:var(--indigo-p);color:var(--indigo);padding:8px 12px;border-radius:8px;font-weight:600;">❓ ${d.question}</div>
+    </div>
+  </div>`;
+  h+=rBlock('en','English Answer',d.english,false,70,true);
+  let dd=140;for(const[l,t] of Object.entries(d.translations||{})){h+=rBlock(l,LNAMES[l]||l,t,true,dd,true);dd+=70;}
+  ra.innerHTML=h;ra.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function rBlock(id,lang,text,isTr,delay,isScholar=false){
+  const tid=`t${id}${Date.now()}`;
+  const col=isScholar?'in':'';
+  return `<div class="rb" style="animation-delay:${delay}ms">
+    <div class="rb-h"><span class="rb-l ${col}">${lang}</span><button class="cpbtn" data-copy="${tid}" onclick="cpTxt('${tid}')">Copy</button></div>
+    <div class="rb-b ${isTr?'tr':''}" id="${tid}">${text}</div>
   </div>`;
 }
 
-function toast(msg){
-  const t=document.getElementById('toast');
-  t.textContent=msg;t.classList.add('show');
-  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2500);
+// LOADING
+function setLoad(on,mode){
+  const isC=mode==='c';
+  const btn=document.getElementById(isC?'cbtn':'sbtn');
+  const sp=document.getElementById(isC?'sp1':'sp2');
+  const lbl=document.getElementById(isC?'clbl2':'slbl');
+  const thk=document.getElementById('thk');
+  const thsp=document.getElementById('thsp');
+  btn.disabled=on;sp.style.display=on?'block':'none';
+  lbl.textContent=on?'Analysing artwork…':(isC?'Generate Name & Description':'Explore Art History');
+  if(on){
+    thk.classList.add('on');thsp.className='thsp '+(isC?'sa':'in');
+    document.getElementById('tht').textContent=isC?'AI is reading the artwork…':'Researching art history…';
+    document.getElementById('ra').innerHTML='';
+  }else{thk.classList.remove('on');}
 }
+
+// HISTORY
+function saveHist(name,snip,mode,img,full,langs){
+  const e={id:Date.now(),artName:name||'Unknown Art',snippet:snip||'',mode,img,full,langs,time:new Date().toLocaleString('en-IN',{dateStyle:'short',timeStyle:'short'})};
+  hist.unshift(e);if(hist.length>25)hist=hist.slice(0,25);
+  localStorage.setItem('kb_hist',JSON.stringify(hist));renderHist();
+}
+function renderHist(){
+  const list=document.getElementById('hlist');
+  document.getElementById('hc').textContent=hist.length;
+  document.getElementById('hemp').style.display=hist.length?'none':'block';
+  list.querySelectorAll('.hp-item').forEach(e=>e.remove());
+  hist.forEach(h=>{
+    const d=document.createElement('div');
+    d.className=`hp-item ${h.mode==='scholar'?'sch':''}`;
+    d.onclick=()=>openDetail(h);
+    d.innerHTML=`${h.img?`<img class="hp-prev" src="${h.img}" alt="">`:''}
+      <div class="hp-top"><div class="hp-an">${h.artName}</div><span class="hm-badge ${h.mode==='creator'?'c':'s'}">${h.mode==='creator'?'🎨':'📜'}</span></div>
+      <div class="hp-snip">${h.snippet}</div>
+      <div class="hp-t">🕐 ${h.time}</div>`;
+    list.appendChild(d);
+  });
+}
+function clearHist(){hist=[];localStorage.removeItem('kb_hist');renderHist();showToast('History cleared');}
+
+// MODAL
+function openHistModal(){
+  if(window.innerWidth<860){
+    document.getElementById('mtitle').textContent='📋 Generation History';
+    let body=hist.length?'':'<p style="text-align:center;color:var(--ink4);padding:20px;">No history yet.</p>';
+    hist.forEach(h=>{body+=`<div style="border-bottom:1px solid var(--border);padding:12px 0;cursor:pointer;" onclick="closeM();setTimeout(()=>openDetail(${JSON.stringify(h).replace(/"/g,'&quot;')}),300)">
+      <div style="font-family:\'Playfair Display\',serif;font-size:14px;font-weight:700;color:var(--ink2);">${h.artName}</div>
+      <div style="font-size:11px;color:var(--ink4);margin-top:2px;">${h.time}</div></div>`;});
+    document.getElementById('mbody').innerHTML=body;
+    document.getElementById('hmodal').classList.add('open');
+  }
+}
+function openDetail(h){
+  document.getElementById('mtitle').textContent=h.artName;
+  let body='';
+  if(h.img)body+=`<img class="m-img" src="${h.img}" alt="">`;
+  body+=`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+    <span class="hm-badge ${h.mode==='creator'?'c':'s'}" style="font-size:11px;padding:4px 10px;">${h.mode==='creator'?'🎨 Creator':'📜 Scholar'}</span>
+    <span style="font-size:11px;color:var(--ink4);">🕐 ${h.time}</span>
+  </div>`;
+  if(h.full){
+    if(h.full.artStyle)body+=`<p style="font-size:12px;color:var(--ink3);margin-bottom:10px;">Style: <b>${h.full.artStyle}</b> · Region: <b>${h.full.region||'India'}</b></p>`;
+    if(h.full.question)body+=`<div style="font-size:12px;background:var(--indigo-p);color:var(--indigo);padding:8px 12px;border-radius:6px;margin-bottom:12px;">❓ ${h.full.question}</div>`;
+    body+=`<div style="font-size:15px;line-height:1.75;color:var(--ink);margin-bottom:14px;">${h.full.english}</div>`;
+    for(const[l,t] of Object.entries(h.full.translations||{})){
+      body+=`<div style="border-top:1px solid var(--border);padding-top:12px;margin-top:12px;">
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:700;color:var(--saffron);margin-bottom:8px;">${LNAMES[l]||l}</div>
+        <div style="font-size:14px;line-height:1.75;color:var(--ink2);font-style:italic;">${t}</div>
+      </div>`;
+    }
+  }
+  document.getElementById('mbody').innerHTML=body;
+  document.getElementById('hmodal').classList.add('open');
+}
+function closeM(){document.getElementById('hmodal').classList.remove('open');}
+
+// COPY
+function cpTxt(id){
+  const el=document.getElementById(id);if(!el)return;
+  navigator.clipboard.writeText(el.innerText).then(()=>{
+    const b=document.querySelector(`[data-copy="${id}"]`);
+    if(b){const o=b.textContent;b.textContent='✓ Copied';setTimeout(()=>b.textContent=o,1500);}
+  });
+}
+
+// TOAST
+function showToast(msg){
+  const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+// INIT
+renderHist();
 </script>
 </body>
 </html>

@@ -23,3 +23,8 @@ coverage.xml
 node_modules/
 *.sqlite
 *.db
+
+# Environment files
+.env
+*.env
+ai_tribal_marketplace/backend/app/.env
