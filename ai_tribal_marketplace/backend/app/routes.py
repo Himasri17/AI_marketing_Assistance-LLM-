@@ -1,25 +1,10 @@
-"""
-routes.py
----------
-Two generation endpoints:
-
-  POST /generate/        — Creator mode (art name + description + translations)
-  POST /generate/history — Scholar mode (art name + historical answer + translations)
-
-Both:
-  - Accept a multipart image upload
-  - Call Claude for vision-based generation
-  - Cache results in the DB (keyed on english text to avoid duplicate API calls)
-  - Translate missing languages on demand
-  - Return JSON immediately; DB writes happen as background tasks
-"""
-
 from fastapi import APIRouter, UploadFile, File, Depends, BackgroundTasks, HTTPException, Query
 from sqlalchemy.orm import Session
-from PIL import Image
-import io
-import asyncio
 from typing import Literal
+import asyncio
+import tempfile
+import os
+from contextlib import asynccontextmanager
 
 from .database import get_db
 from .models import Product
@@ -29,14 +14,19 @@ from .services.translator import translate
 router = APIRouter()
 
 # ---------------------------------------------------------------------------
-# Shared helpers
+# Configuration
 # ---------------------------------------------------------------------------
 
 SUPPORTED_LANGUAGES = {"hindi", "marathi", "bengali", "tamil", "telugu"}
 
+OLLAMA_TIMEOUT_SECONDS = 90
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
 def _parse_languages(languages: str) -> list[str]:
-    """Split comma-separated language string and validate each entry."""
     langs = [l.strip().lower() for l in languages.split(",") if l.strip()]
     unknown = [l for l in langs if l not in SUPPORTED_LANGUAGES]
     if unknown:
@@ -48,26 +38,50 @@ def _parse_languages(languages: str) -> list[str]:
     return langs
 
 
-async def _read_image(file: UploadFile) -> Image.Image:
-    """Read upload and return a PIL RGB image."""
-    contents = await file.read()
+@asynccontextmanager
+async def temp_image_file(upload: UploadFile):
+    """
+    Safely save uploaded image to a temp file and ensure cleanup.
+    """
+    contents = await upload.read()
+    suffix = os.path.splitext(upload.filename)[1] or ".jpg"
+
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
     try:
-        return Image.open(io.BytesIO(contents)).convert("RGB")
-    except Exception:
-        raise HTTPException(status_code=422, detail="Cannot open uploaded file as an image.")
+        tmp.write(contents)
+        tmp.close()
+        yield tmp.name
+    finally:
+        try:
+            os.remove(tmp.name)
+        except FileNotFoundError:
+            pass
+
+
+async def run_with_timeout(func, timeout: int = OLLAMA_TIMEOUT_SECONDS):
+    """
+    Run blocking AI call in threadpool with timeout.
+    """
+    loop = asyncio.get_event_loop()
+    try:
+        return await asyncio.wait_for(
+            loop.run_in_executor(None, func),
+            timeout=timeout,
+        )
+    except asyncio.TimeoutError:
+        raise HTTPException(
+            status_code=504,
+            detail="AI model timed out. Please try again.",
+        )
 
 
 async def _resolve_translations(
     english: str,
     requested_languages: list[str],
     db: Session,
-) -> tuple[dict[str, str], "Product | None"]:
-    """
-    Look up the DB for cached translations, then translate any missing ones.
-    Returns (translations_dict, existing_db_row_or_None).
-    """
+):
     existing = db.query(Product).filter(Product.english == english).first()
-    cached: dict[str, str] = {}
+    cached = {}
 
     if existing:
         for lang in requested_languages:
@@ -78,7 +92,7 @@ async def _resolve_translations(
     missing = [l for l in requested_languages if l not in cached]
 
     loop = asyncio.get_event_loop()
-    fresh: dict[str, str] = {}
+    fresh = {}
     for lang in missing:
         translation = await loop.run_in_executor(None, translate, english, lang)
         fresh[lang] = translation
@@ -96,11 +110,9 @@ def _make_db_saver(
     existing: "Product | None",
     question: str | None = None,
 ):
-    """Return a zero-argument callable suitable for BackgroundTasks."""
     def _save():
         try:
             if existing:
-                # Update any newly translated columns
                 for lang, value in translations.items():
                     setattr(existing, lang, value)
                 db.commit()
@@ -122,56 +134,51 @@ def _make_db_saver(
         except Exception:
             db.rollback()
             raise
+
     return _save
 
 
 # ---------------------------------------------------------------------------
-# Endpoint 1: Creator — art name + description + translations
+# Endpoint 1: Creator Mode
 # ---------------------------------------------------------------------------
 
 @router.post("/generate/")
 async def generate(
     file: UploadFile = File(...),
-    languages: str = Query(default="", description="Comma-separated: hindi,marathi,bengali,tamil,telugu"),
+    languages: str = Query(default=""),
     length: Literal["short", "medium", "detailed"] = Query(default="medium"),
     audience: Literal["general", "buyer", "student", "children"] = Query(default="general"),
     tone: Literal["poetic", "informative", "storytelling", "academic"] = Query(default="poetic"),
     background_tasks: BackgroundTasks = None,
     db: Session = Depends(get_db),
 ):
-    """
-    Creator mode.
-
-    - Identifies the tribal art form
-    - Generates: art_name, art_style, region, english description
-    - Translates into requested languages
-    - Caches in DB
-
-    Returns:
-    {
-        "art_name": "...",
-        "art_style": "...",
-        "region": "...",
-        "english": "...",
-        "translations": { "hindi": "...", ... }
-    }
-    """
     try:
         requested_languages = _parse_languages(languages) if languages.strip() else []
-        image = await _read_image(file)
 
-        # --- Claude vision call ---
-        ai_result = generate_description(image, length=length, audience=audience, tone=tone)
+        async with temp_image_file(file) as image_path:
+
+            ai_result = await run_with_timeout(
+                lambda: generate_description(
+                    image_path,
+                    length=length,
+                    audience=audience,
+                    tone=tone,
+                )
+            )
+
         english   = ai_result["english"]
         art_name  = ai_result.get("art_name", "Unknown Art")
         art_style = ai_result.get("art_style", "")
         region    = ai_result.get("region", "India")
 
-        # --- Translations (cached + fresh) ---
-        translations, existing = await _resolve_translations(english, requested_languages, db)
+        translations, existing = await _resolve_translations(
+            english, requested_languages, db
+        )
 
-        # --- Persist to DB in background ---
-        saver = _make_db_saver(db, english, art_name, art_style, region, translations, existing)
+        saver = _make_db_saver(
+            db, english, art_name, art_style, region, translations, existing
+        )
+
         if background_tasks:
             background_tasks.add_task(saver)
         else:
@@ -192,55 +199,42 @@ async def generate(
 
 
 # ---------------------------------------------------------------------------
-# Endpoint 2: Scholar — art history + translations
+# Endpoint 2: Scholar Mode
 # ---------------------------------------------------------------------------
 
 @router.post("/generate/history")
 async def generate_art_history(
     file: UploadFile = File(...),
-    languages: str = Query(default="", description="Comma-separated: hindi,marathi,bengali,tamil,telugu"),
+    languages: str = Query(default=""),
     question: str = Query(
         default="Tell me the history and origins of this art form.",
-        description="The historical/cultural question to answer about the artwork.",
     ),
     background_tasks: BackgroundTasks = None,
     db: Session = Depends(get_db),
 ):
-    """
-    Scholar mode.
-
-    - Identifies the tribal art form
-    - Answers the provided historical/cultural question
-    - Translates the answer into requested languages
-    - Caches in DB (keyed on english answer text)
-
-    Returns:
-    {
-        "art_name":  "...",
-        "art_style": "...",
-        "region":    "...",
-        "question":  "...",
-        "english":   "...",
-        "translations": { "hindi": "...", ... }
-    }
-    """
     try:
         requested_languages = _parse_languages(languages) if languages.strip() else []
-        image = await _read_image(file)
 
-        # --- Claude vision call ---
-        ai_result = generate_history(image, question=question)
+        async with temp_image_file(file) as image_path:
+
+            ai_result = await run_with_timeout(
+                lambda: generate_history(image_path, question=question)
+            )
+
         english   = ai_result["english"]
         art_name  = ai_result.get("art_name", "Unknown Art")
         art_style = ai_result.get("art_style", "")
         region    = ai_result.get("region", "India")
         q_text    = ai_result.get("question", question)
 
-        # --- Translations ---
-        translations, existing = await _resolve_translations(english, requested_languages, db)
+        translations, existing = await _resolve_translations(
+            english, requested_languages, db
+        )
 
-        # --- Persist ---
-        saver = _make_db_saver(db, english, art_name, art_style, region, translations, existing, question=q_text)
+        saver = _make_db_saver(
+            db, english, art_name, art_style, region, translations, existing, question=q_text
+        )
+
         if background_tasks:
             background_tasks.add_task(saver)
         else:
@@ -262,7 +256,7 @@ async def generate_art_history(
 
 
 # ---------------------------------------------------------------------------
-# Endpoint 3: History list (GET) — retrieve past generations
+# Endpoint 3: History List
 # ---------------------------------------------------------------------------
 
 @router.get("/history/")
@@ -271,9 +265,6 @@ def get_history(
     limit: int = Query(default=20, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
-    """
-    Return past generation records from the DB, newest first.
-    """
     products = (
         db.query(Product)
         .order_by(Product.id.desc())
@@ -281,13 +272,14 @@ def get_history(
         .limit(limit)
         .all()
     )
+
     return [
         {
             "id":        p.id,
-            "art_name":  getattr(p, "art_name", None),
-            "art_style": getattr(p, "art_style", None),
-            "region":    getattr(p, "region", None),
-            "question":  getattr(p, "question", None),
+            "art_name":  p.art_name,
+            "art_style": p.art_style,
+            "region":    p.region,
+            "question":  p.question,
             "english":   p.english,
             "hindi":     p.hindi,
             "marathi":   p.marathi,

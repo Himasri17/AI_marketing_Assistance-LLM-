@@ -1,66 +1,35 @@
-import os
-import base64
 import json
 import re
-from io import BytesIO
-from typing import Literal
+import ollama
 from PIL import Image
-from dotenv import load_dotenv
-from openai import OpenAI
-
-# -----------------------------------------------------
-# Load API key
-# -----------------------------------------------------
-load_dotenv()
-
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+from typing import Literal
 
 # -----------------------------------------------------
 # Helpers
 # -----------------------------------------------------
 
-def _image_to_base64(image: Image.Image) -> str:
-    buffer = BytesIO()
-    image.save(buffer, format="JPEG")
-    return base64.b64encode(buffer.getvalue()).decode("utf-8")
-
-
 def _parse_json(raw: str) -> dict:
-    """
-    Clean markdown fences and safely parse JSON.
-    """
     cleaned = re.sub(r"```(?:json)?", "", raw).strip().rstrip("`").strip()
     return json.loads(cleaned)
 
 
-def _call_openai(prompt: str, b64_image: str) -> str:
+def _call_ollama(prompt: str, image_path: str) -> str:
     """
-    Vision call using Chat Completions (stable API).
+    Vision call using Ollama + LLaVA (local & free).
     """
 
-    response = client.chat.completions.create(
-        model="gpt-4o-mini",  # Vision-capable + cheaper
+    response = ollama.chat(
+        model="llava",
         messages=[
             {
                 "role": "user",
-                "content": [
-                    {
-                        "type": "text",
-                        "text": prompt,
-                    },
-                    {
-                        "type": "image_url",
-                        "image_url": {
-                            "url": f"data:image/jpeg;base64,{b64_image}"
-                        },
-                    },
-                ],
+                "content": prompt,
+                "images": [image_path],  # <-- local image file path
             }
         ],
-        max_tokens=800,
     )
 
-    return response.choices[0].message.content
+    return response["message"]["content"]
 
 
 # -----------------------------------------------------
@@ -68,7 +37,7 @@ def _call_openai(prompt: str, b64_image: str) -> str:
 # -----------------------------------------------------
 
 def generate_description(
-    image: Image.Image,
+    image_path: str,
     length: Literal["short", "medium", "detailed"] = "medium",
     audience: Literal["general", "buyer", "student", "children"] = "general",
     tone: Literal["poetic", "informative", "storytelling", "academic"] = "poetic",
@@ -102,8 +71,7 @@ Return ONLY valid JSON with exactly these fields:
 }}
 """
 
-    b64 = _image_to_base64(image)
-    raw = _call_openai(prompt, b64)
+    raw = _call_ollama(prompt, image_path)
     return _parse_json(raw)
 
 
@@ -112,7 +80,7 @@ Return ONLY valid JSON with exactly these fields:
 # -----------------------------------------------------
 
 def generate_history(
-    image: Image.Image,
+    image_path: str,
     question: str = "Tell me the history and origins of this art form.",
 ) -> dict:
 
@@ -136,9 +104,8 @@ Return ONLY valid JSON:
 }}
 """
 
-    b64 = _image_to_base64(image)
-    raw = _call_openai(prompt, b64)
+    raw = _call_ollama(prompt, image_path)
 
     data = _parse_json(raw)
-    data["question"] = question  # preserve original formatting
+    data["question"] = question
     return data
